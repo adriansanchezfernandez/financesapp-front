@@ -1,0 +1,16 @@
+.movement-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+.ingreso {
+  color: #16a34a;
+}
+
+.gasto {
+  color: #dc2626;
+}

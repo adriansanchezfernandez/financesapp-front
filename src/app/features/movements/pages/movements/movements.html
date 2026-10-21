@@ -1,1 +1,70 @@
-<p>movements works!</p>
+<section class="p-4">
+
+  <!-- Cabecera -->
+  <div class="flex justify-content-between align-items-center mb-4">
+    <h2 class="m-0">Mis movimientos</h2>
+
+    <a mat-raised-button routerLink="/movements/new">
+      <mat-icon>add</mat-icon>
+      Nuevo movimiento
+    </a>
+  </div>
+
+  <!-- Listado de movimientos -->
+  @if (movements().length === 0) {
+
+    <mat-card>
+      <mat-card-content class="text-center p-5">
+        <mat-icon>receipt_long</mat-icon>
+
+        <p>Todavía no tienes movimientos registrados.</p>
+
+        <a mat-button routerLink="/movements/new">
+          Crear mi primer movimiento
+        </a>
+      </mat-card-content>
+    </mat-card>
+
+  } @else {
+
+    <div class="flex flex-column gap-3">
+
+      @for (movement of movements(); track movement.id) {
+
+        <mat-card>
+          <mat-card-content>
+            <div class="flex justify-content-between align-items-center gap-3">
+
+              <!-- Información del movimiento -->
+              <div class="flex flex-column gap-2">
+                <strong>{{ movement.descripcion }}</strong>
+
+                <span>{{ movement.fecha }}</span>
+
+                <span>
+                  {{ movement.tipo === 'ingreso' ? 'Ingreso' : 'Gasto' }}
+                </span>
+              </div>
+
+              <!-- Cantidad -->
+              <div>
+                <strong
+                  [class.ingreso]="movement.tipo === 'ingreso'"
+                  [class.gasto]="movement.tipo === 'gasto'"
+                >
+                  {{ movement.tipo === 'ingreso' ? '+' : '-' }}
+                  {{ movement.cantidad | number:'1.2-2' }} €
+                </strong>
+              </div>
+
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+      }
+
+    </div>
+
+  }
+
+</section>
