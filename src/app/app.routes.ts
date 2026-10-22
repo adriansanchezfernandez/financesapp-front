@@ -29,6 +29,14 @@ export const routes: Routes = [
             (m) => m.MovementForm,
           ),
       },
+      {
+        path: 'movements/:id/edit',
+        loadComponent: () =>
+          import('./features/movements/pages/movement-form/movement-form').then(
+            (m) => m.MovementForm,
+          ),
+        title: 'Editar movimiento',
+      },
     ],
   },
   {

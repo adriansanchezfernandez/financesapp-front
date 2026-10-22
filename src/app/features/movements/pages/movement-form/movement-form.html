@@ -1,7 +1,7 @@
 
 <form [formGroup]="form" >
 
-
+<h2>{{ editingId !== null ? 'Editar movimiento' : 'Nuevo movimiento' }}</h2>
 <div class="grid">
   <!-- Descripción: ancho completo -->
   <div class="col-12">
@@ -104,7 +104,7 @@
     [disabled]="form.invalid"
     (click)="guardarMovimiento()"
   >
-    Guardar movimiento
+    {{ editingId !== null ? 'Guardar cambios' : 'Guardar movimiento' }}
   </button>
 </div>
 </form>

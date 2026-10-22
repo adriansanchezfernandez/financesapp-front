@@ -1,70 +1,167 @@
-<section class="p-4">
+<section class="movements-page p-4">
+<div class="movements-header mb-3">
 
-  <!-- Cabecera -->
-  <div class="flex justify-content-between align-items-center mb-4">
-    <h2 class="m-0">Mis movimientos</h2>
+  <h2 class="m-0">Mis movimientos</h2>
 
-    <a mat-raised-button routerLink="/movements/new">
+  <div class="header-actions">
+
+    <!-- Buscar -->
+    <mat-form-field
+      appearance="outline"
+      subscriptSizing="dynamic"
+      class="filter-search"
+    >
+      <mat-label>Buscar</mat-label>
+
+      <mat-icon matPrefix>search</mat-icon>
+
+      <input
+        matInput
+        type="text"
+        [value]="filtroDescripcion()"
+        (input)="filtroDescripcion.set($any($event.target).value)"
+      />
+    </mat-form-field>
+
+    <!-- Filtrar por tipo -->
+    <mat-form-field
+      appearance="outline"
+      subscriptSizing="dynamic"
+      class="filter-type"
+    >
+      <mat-label>Tipo</mat-label>
+
+      <mat-select
+        [value]="filtroTipo()"
+        (valueChange)="filtroTipo.set($event)"
+      >
+        <mat-option value="todos">Todos</mat-option>
+        <mat-option value="ingreso">Ingresos</mat-option>
+        <mat-option value="gasto">Gastos</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <!-- Nuevo movimiento -->
+    <a
+      mat-flat-button
+      routerLink="/movements/new"
+      class="add-button"
+    >
       <mat-icon>add</mat-icon>
       Nuevo movimiento
     </a>
+
   </div>
 
-  <!-- Listado de movimientos -->
-  @if (movements().length === 0) {
-
-    <mat-card>
-      <mat-card-content class="text-center p-5">
-        <mat-icon>receipt_long</mat-icon>
-
-        <p>Todavía no tienes movimientos registrados.</p>
-
-        <a mat-button routerLink="/movements/new">
-          Crear mi primer movimiento
-        </a>
-      </mat-card-content>
-    </mat-card>
-
-  } @else {
-
-    <div class="flex flex-column gap-3">
-
-      @for (movement of movements(); track movement.id) {
-
-        <mat-card>
-          <mat-card-content>
-            <div class="flex justify-content-between align-items-center gap-3">
-
-              <!-- Información del movimiento -->
-              <div class="flex flex-column gap-2">
-                <strong>{{ movement.descripcion }}</strong>
-
-                <span>{{ movement.fecha }}</span>
-
-                <span>
-                  {{ movement.tipo === 'ingreso' ? 'Ingreso' : 'Gasto' }}
-                </span>
-              </div>
-
-              <!-- Cantidad -->
-              <div>
-                <strong
-                  [class.ingreso]="movement.tipo === 'ingreso'"
-                  [class.gasto]="movement.tipo === 'gasto'"
-                >
-                  {{ movement.tipo === 'ingreso' ? '+' : '-' }}
-                  {{ movement.cantidad | number:'1.2-2' }} €
-                </strong>
-              </div>
-
-            </div>
-          </mat-card-content>
-        </mat-card>
-
-      }
-
+</div>
+  <!-- Tarjetas de resumen -->
+  <div class="grid mb-2">
+    <div class="col-4">
+      <mat-card class="summary-card">
+        <mat-card-content>
+          <span class="summary-label">Ingresos</span>
+          <strong class="summary-value ingreso"> {{ totalIngresos() | number: '1.2-2' }} € </strong>
+        </mat-card-content>
+      </mat-card>
     </div>
 
-  }
+    <div class="col-4">
+      <mat-card class="summary-card">
+        <mat-card-content>
+          <span class="summary-label">Gastos</span>
+          <strong class="summary-value gasto"> {{ totalGastos() | number: '1.2-2' }} € </strong>
+        </mat-card-content>
+      </mat-card>
+    </div>
 
+    <div class="col-4">
+      <mat-card class="summary-card">
+        <mat-card-content>
+          <span class="summary-label">Saldo</span>
+          <strong class="summary-value" [class.ingreso]="saldo() >= 0" [class.gasto]="saldo() < 0">
+            {{ saldo() | number: '1.2-2' }} €
+          </strong>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+
+
+
+  <!-- Listado -->
+  @if (movements().length === 0) {
+    <p>Todavía no tienes movimientos registrados.</p>
+  } @else {
+    <div class="table-scroll">
+      <table mat-table [dataSource]="movimientosFiltrados()" class="movements-table">
+        <!-- Fecha -->
+        <ng-container matColumnDef="fecha">
+          <th mat-header-cell *matHeaderCellDef>Fecha</th>
+          <td mat-cell *matCellDef="let movement">
+            {{ movement.fecha }}
+          </td>
+        </ng-container>
+
+        <!-- Descripción -->
+        <ng-container matColumnDef="descripcion">
+          <th mat-header-cell *matHeaderCellDef>Descripción</th>
+          <td mat-cell *matCellDef="let movement">
+            {{ movement.descripcion }}
+          </td>
+        </ng-container>
+
+        <!-- Tipo -->
+        <ng-container matColumnDef="tipo">
+          <th mat-header-cell *matHeaderCellDef>Tipo</th>
+          <td mat-cell *matCellDef="let movement">
+            {{ movement.tipo === 'ingreso' ? 'Ingreso' : 'Gasto' }}
+          </td>
+        </ng-container>
+
+        <!-- Cantidad -->
+        <ng-container matColumnDef="cantidad">
+          <th mat-header-cell *matHeaderCellDef>Cantidad</th>
+          <td mat-cell *matCellDef="let movement">
+            <strong
+              [class.ingreso]="movement.tipo === 'ingreso'"
+              [class.gasto]="movement.tipo === 'gasto'"
+            >
+              {{ movement.tipo === 'ingreso' ? '+' : '-' }}
+              {{ movement.cantidad | number: '1.2-2' }} €
+            </strong>
+          </td>
+        </ng-container>
+
+        <!-- Acciones -->
+        <ng-container matColumnDef="acciones">
+          <th mat-header-cell *matHeaderCellDef>Acciones</th>
+
+          <td mat-cell *matCellDef="let movement">
+            <button
+              mat-icon-button
+              type="button"
+              [routerLink]="['/movements', movement.id, 'edit']"
+              aria-label="Editar movimiento"
+            >
+              <mat-icon>edit</mat-icon>
+            </button>
+
+            <button
+              mat-icon-button
+              type="button"
+              aria-label="Eliminar movimiento"
+              (click)="eliminarMovimiento(movement.id)"
+            >
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <!-- Filas -->
+        <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
+    </div>
+  }
 </section>
