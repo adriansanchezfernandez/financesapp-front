@@ -1,11 +1,56 @@
+.app-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  min-height: 0;
+}
+
+app-topbar {
+  flex-shrink: 0;
+}
+
 .main-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+
+  width: 100%;
   max-width: 1400px;
+  min-width: 0;
+  min-height: 0;
+
   margin: 0 auto;
   padding: 24px;
+  box-sizing: border-box;
+
+  // Scroll general para Dashboard y formularios
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+// Componente que Angular inserta después del router-outlet
+.main-content > :not(router-outlet) {
+  display: block;
+  flex: 1 0 auto;
+  min-width: 0;
+}
+
+// Solo Movements ocupará exactamente la altura disponible
+.main-content > app-movements {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
 }
 
 @media (max-width: 600px) {
   .main-content {
     padding: 16px;
+  }
+
+  // En móviles pequeños permitimos scroll general
+  // para evitar que las tarjetas dejen la tabla sin espacio
+  .main-content > app-movements {
+    flex: 1 0 auto;
+    overflow: visible;
   }
 }

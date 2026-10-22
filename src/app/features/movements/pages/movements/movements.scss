@@ -1,0 +1,157 @@
+
+/* ===== CONTENEDOR PRINCIPAL ===== */
+
+:host {
+  display: block;
+  height: 100%;
+  min-height: 0;
+}
+
+.movements-page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+/* ===== CABECERA Y FILTROS ===== */
+
+.movements-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.filter-search {
+  width: 200px;
+}
+
+.filter-type {
+  width: 135px;
+}
+
+.filter-search,
+.filter-type {
+  --mat-form-field-container-height: 40px;
+  --mat-form-field-container-vertical-padding: 8px;
+}
+
+.add-button {
+  height: 40px;
+}
+
+/* ===== TARJETAS DE RESUMEN ===== */
+
+.summary-card {
+  mat-card-content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 10px 14px;
+  }
+}
+
+.summary-label {
+  font-size: 12px;
+  color: #757575;
+}
+
+.summary-value {
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.ingreso {
+  color: #16a34a;
+}
+
+.gasto {
+  color: #dc2626;
+}
+
+/* ===== TABLA ===== */
+
+.table-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+  overflow: auto;
+}
+
+.movements-table {
+  width: 100%;
+  min-width: 650px;
+}
+
+/* ===== RESPONSIVE ===== */
+
+@media (max-width: 767px) {
+  .movements-header {
+    align-items: stretch;
+  }
+
+  .header-actions {
+    width: 100%;
+  }
+
+  .filter-search {
+    flex: 1 1 160px;
+    width: auto;
+    min-width: 0;
+  }
+
+  .filter-type {
+    flex: 1 1 110px;
+    width: auto;
+    min-width: 0;
+  }
+
+  .add-button {
+    flex: 1 1 100%;
+  }
+}
+
+@media (max-width: 600px) {
+  :host {
+    height: auto;
+  }
+
+  .movements-page {
+    height: auto;
+    padding: 0.75rem !important;
+  }
+
+  .table-scroll {
+    max-height: 45dvh;
+  }
+
+  .movements-table {
+    min-width: 600px;
+  }
+
+  .summary-card mat-card-content {
+    padding: 8px;
+  }
+
+  .summary-label {
+    font-size: 11px;
+  }
+
+  .summary-value {
+    font-size: 14px;
+    overflow-wrap: anywhere;
+  }
+}
