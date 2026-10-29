@@ -1,12 +1,15 @@
-import { computed, Injectable, signal } from "@angular/core";
+import { computed, inject, Injectable, signal } from "@angular/core";
 import { CreateMovement, MOCK_MOVEMENTS, Movement } from "../pages/models/movement.model";
+import { HttpClient } from "@angular/common/http";
+import { Observable, tap } from "rxjs";
 
 @Injectable({
   providedIn: 'root',
 })
 export class MovementsService {
-  private readonly _movements = signal<Movement[]>([...MOCK_MOVEMENTS]);
-
+  private readonly _movements = signal<Movement[]>([]);
+  private readonly http = inject(HttpClient);
+  private readonly apiUrl = 'http://localhost:8080/api/movements';
   readonly movements = this._movements.asReadonly();
 
   readonly totalIngresos = computed(() =>
@@ -25,38 +28,51 @@ readonly saldo = computed(() =>
   this.totalIngresos() - this.totalGastos()
 );
 
-  addMovement(movement: CreateMovement): void {
-    const newMovement: Movement = {
-      ...movement,
-      id: Date.now(),
-    };
+loadMovements(): void {
+  this.http.get<Movement[]>(this.apiUrl).subscribe({
+    next: (movements) => {
+      this._movements.set(movements);
+    },
+    error: (error) => {
+      console.error('Error al cargar movimientos:', error);
+    }
+  });
+}
 
-    this._movements.update(current => [
-      ...current,
-      newMovement,
-    ]);
-
-    console.log(this._movements());
+  addMovement(movement: CreateMovement): Observable<Movement> {
+    return this.http.post<Movement>(this.apiUrl, movement).pipe(
+    tap((newMovement) => {
+      this._movements.update(current => [
+        ...current,
+        newMovement
+      ]);
+    })
+  );
   }
 
-  deleteMovement(id: number): void {
-  this._movements.update(movements =>
-    movements.filter(movement => movement.id !== id)
+deleteMovement(id: number): Observable<void> {
+  return this.http.delete<void>(`${this.apiUrl}/${id}`).pipe(
+    tap(() => {
+      this._movements.update(movements =>
+        movements.filter(movement => movement.id !== id)
+      );
+    })
   );
-
 }
 
 getMovementById(id: number): Movement | undefined {
   return this._movements().find(movement => movement.id === id);
 }
 
-updateMovement(id: number, changes: CreateMovement): void {
-  this._movements.update(movements =>
-    movements.map(movement =>
-      movement.id === id
-        ? { ...movement, ...changes }
-        : movement
-    )
+updateMovement(id: number, changes: CreateMovement): Observable<Movement> {
+  return this.http.put<Movement>(`${this.apiUrl}/${id}`, changes).pipe(
+    tap(updatedMovement => {
+      this._movements.update(movements =>
+        movements.map(movement =>
+          movement.id === id ? updatedMovement : movement
+        )
+      );
+    })
   );
 }
 

@@ -1,59 +1,52 @@
 <section class="movements-page p-4">
-<div class="movements-header mb-3">
+  <div class="movements-header mb-3">
+    <h2 class="m-0">Mis movimientos</h2>
 
-  <h2 class="m-0">Mis movimientos</h2>
+    <div class="header-actions">
+      <!-- Buscar -->
+      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="filter-search">
+        <mat-label>Buscar</mat-label>
 
-  <div class="header-actions">
+        <mat-icon matPrefix>search</mat-icon>
 
-    <!-- Buscar -->
-    <mat-form-field
-      appearance="outline"
-      subscriptSizing="dynamic"
-      class="filter-search"
-    >
-      <mat-label>Buscar</mat-label>
+        <input
+          matInput
+          type="text"
+          [value]="filtroDescripcion()"
+          (input)="filtroDescripcion.set($any($event.target).value)"
+        />
+      </mat-form-field>
+      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="filter-month">
+        <mat-label>Mes</mat-label>
 
-      <mat-icon matPrefix>search</mat-icon>
+        <mat-select [value]="selectedMonth()" (valueChange)="selectedMonth.set($event)">
+          <mat-option [value]="null">Todos los meses</mat-option>
 
-      <input
-        matInput
-        type="text"
-        [value]="filtroDescripcion()"
-        (input)="filtroDescripcion.set($any($event.target).value)"
-      />
-    </mat-form-field>
+          @for (month of availableMonths(); track month.value) {
+            <mat-option [value]="month.value">
+              {{ month.label }}
+            </mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+      <!-- Filtrar por tipo -->
+      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="filter-type">
+        <mat-label>Tipo</mat-label>
 
-    <!-- Filtrar por tipo -->
-    <mat-form-field
-      appearance="outline"
-      subscriptSizing="dynamic"
-      class="filter-type"
-    >
-      <mat-label>Tipo</mat-label>
+        <mat-select [value]="filtroTipo()" (valueChange)="filtroTipo.set($event)">
+          <mat-option value="todos">Todos</mat-option>
+          <mat-option value="ingreso">Ingresos</mat-option>
+          <mat-option value="gasto">Gastos</mat-option>
+        </mat-select>
+      </mat-form-field>
 
-      <mat-select
-        [value]="filtroTipo()"
-        (valueChange)="filtroTipo.set($event)"
-      >
-        <mat-option value="todos">Todos</mat-option>
-        <mat-option value="ingreso">Ingresos</mat-option>
-        <mat-option value="gasto">Gastos</mat-option>
-      </mat-select>
-    </mat-form-field>
-
-    <!-- Nuevo movimiento -->
-    <a
-      mat-flat-button
-      routerLink="/movements/new"
-      class="add-button"
-    >
-      <mat-icon>add</mat-icon>
-      Nuevo movimiento
-    </a>
-
+      <!-- Nuevo movimiento -->
+      <a mat-flat-button routerLink="/movements/new" class="add-button">
+        <mat-icon>add</mat-icon>
+        Nuevo movimiento
+      </a>
+    </div>
   </div>
-
-</div>
   <!-- Tarjetas de resumen -->
   <div class="grid mb-2">
     <div class="col-4">
@@ -85,8 +78,6 @@
       </mat-card>
     </div>
   </div>
-
-
 
   <!-- Listado -->
   @if (movements().length === 0) {

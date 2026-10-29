@@ -6,6 +6,7 @@ import { CreateMovement, Movement, MovementType } from '../models/movement.model
 import { MovementsService } from '../../services/movements.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { catchError, EMPTY, of } from 'rxjs';
 @Component({
   imports: [ReactiveFormsModule, MaterialModule],
   selector: 'app-movement-form',
@@ -20,7 +21,7 @@ export class MovementForm implements OnInit {
   readonly editingId = this.route.snapshot.paramMap.has('id')
     ? Number(this.route.snapshot.paramMap.get('id'))
     : null;
-private readonly snackBar = inject(MatSnackBar);
+  private readonly snackBar = inject(MatSnackBar);
 
   form = new FormGroup({
     descripcion: new FormControl('', [Validators.required, Validators.maxLength(100)]),
@@ -35,33 +36,61 @@ private readonly snackBar = inject(MatSnackBar);
     this.form.controls.fecha.setValue(new Date());
   }
 
-  guardarMovimiento() {
-    console.log(this.form.getRawValue());
-    let aux = this.form.getRawValue();
-    let movimiento: CreateMovement = {
+  guardarMovimiento(): void {
+    const aux = this.form.getRawValue();
+
+    const movimiento: CreateMovement = {
       descripcion: aux.descripcion!,
       cantidad: aux.cantidad!,
       fecha: dayjs(aux.fecha).format('YYYY-MM-DD'),
       tipo: aux.tipo!,
     };
 
-
     if (this.editingId !== null) {
-  this.movementsService.updateMovement(this.editingId, movimiento);
-   this.snackBar.open('Movimiento actualizado correctamente', 'Cerrar', {
-    duration: 3000,
-  });
-} else {
-  this.movementsService.addMovement(movimiento);
-    this.snackBar.open('Movimiento creado correctamente', 'Cerrar', {
-    duration: 3000,
+   
+if (this.editingId !== null) {
+  this.movementsService.updateMovement(this.editingId, movimiento).pipe(
+    catchError(error => {
+      console.error('Error al actualizar movimiento:', error);
+
+      this.snackBar.open('Error al actualizar el movimiento', 'Cerrar', {
+        duration: 3000,
+      });
+
+      return of(null);
+    })
+  ).subscribe(res => {
+    if (res) {
+      this.snackBar.open('Movimiento actualizado correctamente', 'Cerrar', {
+        duration: 3000,
+      });
+    }
   });
 }
-
-this.router.navigate(['/movements']);
-
-
+    } else {
+      this.movementsService
+        .addMovement(movimiento)
+        .pipe(
+          catchError((error) => {
+            console.error('Error al crear movimiento:', error);
+            this.snackBar.open('Error al crear el movimiento', 'Cerrar', {
+              duration: 3000,
+            });
+            return EMPTY;
+          }),
+        )
+        .subscribe((res) => {
+          if (res) {
+            this.snackBar.open('Movimiento creado correctamente', 'Cerrar', {
+              duration: 3000,
+            });
+          }
+        });
+    }
+    this.router.navigate(['/movements']);
   }
+
+
   ngOnInit(): void {
     if (this.editingId === null) {
       return;
@@ -80,6 +109,5 @@ this.router.navigate(['/movements']);
       fecha: dayjs(movement.fecha).toDate(),
       tipo: movement.tipo,
     });
-
   }
 }
