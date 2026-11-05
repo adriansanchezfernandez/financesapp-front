@@ -25,6 +25,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatIconModule } from '@angular/material/icon';
 import { MatBadgeModule } from '@angular/material/badge';
+import { MatButtonToggleGroup } from '@angular/material/button-toggle';
 
 // Navegación y layout
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -72,6 +73,7 @@ const MATERIAL_MODULES = [
   MatButtonToggleModule,
   MatIconModule,
   MatBadgeModule,
+  MatButtonToggleGroup,
 
   // Navegación
   MatToolbarModule,

@@ -1,12 +1,14 @@
 import { computed, inject, Injectable, signal } from "@angular/core";
 import { CreateMovement, MOCK_MOVEMENTS, Movement } from "../pages/models/movement.model";
 import { HttpClient } from "@angular/common/http";
-import { Observable, tap } from "rxjs";
+import { finalize, Observable, tap } from "rxjs";
 
 @Injectable({
   providedIn: 'root',
 })
 export class MovementsService {
+
+  readonly loading = signal(false);
   private readonly _movements = signal<Movement[]>([]);
   private readonly http = inject(HttpClient);
   private readonly apiUrl = 'http://localhost:8080/api/movements';
@@ -29,7 +31,10 @@ readonly saldo = computed(() =>
 );
 
 loadMovements(): void {
-  this.http.get<Movement[]>(this.apiUrl).subscribe({
+   this.loading.set(true);
+  this.http.get<Movement[]>(this.apiUrl).pipe(
+    finalize(() => this.loading.set(false))
+  ).subscribe({
     next: (movements) => {
       this._movements.set(movements);
     },
@@ -46,7 +51,7 @@ loadMovements(): void {
         ...current,
         newMovement
       ]);
-    })
+    }),
   );
   }
 

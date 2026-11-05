@@ -38,6 +38,7 @@ readonly selectedMonth = signal<string | null>(null);
   'cantidad',
   'acciones'
 ];
+readonly loading = this.movementsService.loading;
 
 readonly movimientosFiltrados = computed(() => {
   const descripcion = this.filtroDescripcion().trim().toLowerCase();
@@ -57,6 +58,34 @@ readonly movimientosFiltrados = computed(() => {
 
     return coincideDescripcion && coincideTipo && coincideMes;
   });
+});
+
+readonly movimientosDelMes = computed(() => {
+  const mes = this.selectedMonth();
+
+  if (!mes) {
+    return this.movements();
+  }
+
+  return this.movements().filter(movement =>
+    movement.fecha.startsWith(mes)
+  );
+});
+
+readonly ingresosDelMes = computed(() => {
+  return this.movimientosDelMes()
+    .filter(movement => movement.tipo === 'ingreso')
+    .reduce((total, movement) => total + movement.cantidad, 0);
+});
+
+readonly gastosDelMes = computed(() => {
+  return this.movimientosDelMes()
+    .filter(movement => movement.tipo === 'gasto')
+    .reduce((total, movement) => total + movement.cantidad, 0);
+});
+
+readonly saldoDelMes = computed(() => {
+  return this.ingresosDelMes() - this.gastosDelMes();
 });
 
 readonly availableMonths = computed(() => {

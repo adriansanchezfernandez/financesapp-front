@@ -1,31 +1,15 @@
+<h2>Evolución de ingresos y gastos</h2>
 
-<section class="dashboard">
-  <h1>Dashboard</h1>
+<mat-button-toggle-group
+  [value]="selectedPeriod()"
+  (change)="selectedPeriod.set($event.value)"
+  aria-label="Periodo del gráfico"
+>
+  <mat-button-toggle [value]="6">6 meses</mat-button-toggle>
+  <mat-button-toggle [value]="12">12 meses</mat-button-toggle>
+  <mat-button-toggle value="all">Todo</mat-button-toggle>
+</mat-button-toggle-group>
 
-  <div class="grid">
-    <div class="col-12 md:col-6 lg:col-4">
-      <app-summary-card
-        title="Patrimonio total"
-        value="12.450 €"
-        
-      />
-    </div>
-
-    <div class="col-12 md:col-6 lg:col-4">
-      <app-summary-card
-        title="Inversiones"
-        value="8.200 €"
-        icon="trending_up"
-      />
-    </div>
-
-    <div class="col-12 md:col-6 lg:col-4">
-      <app-summary-card
-        title="Efectivo disponible"
-        value="4.250 €"
-        icon="payments"
-      />
-    </div>
-  </div>
-</section>
-
+<div class="chart-container">
+  <canvas #monthlyChart></canvas>
+</div>
