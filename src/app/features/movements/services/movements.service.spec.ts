@@ -4,7 +4,7 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 
 import { MovementsService } from './movements.service';
 import { CreateMovement, Movement } from '../pages/models/movement.model';
-
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 describe('MovementsService', () => {
   let service: MovementsService;
   let httpMock: HttpTestingController;
@@ -89,35 +89,32 @@ describe('MovementsService', () => {
     expect(service.saldo()).toBe(1500);
   });
 
-
   it('no debería añadir un movimiento si el POST falla', () => {
-  const nuevoMovimiento: CreateMovement = {
-    descripcion: 'Nómina',
-    cantidad: 1500,
-    fecha: '2026-11-06',
-    tipo: 'ingreso'
-  };
+    const nuevoMovimiento: CreateMovement = {
+      descripcion: 'Nómina',
+      cantidad: 1500,
+      fecha: '2026-11-06',
+      tipo: 'ingreso',
+    };
 
-  let errorRecibido: unknown;
+    let errorRecibido: unknown;
 
-  service.addMovement(nuevoMovimiento).subscribe({
-    error: error => errorRecibido = error
+    service.addMovement(nuevoMovimiento).subscribe({
+      error: (error) => (errorRecibido = error),
+    });
+
+    const request = httpMock.expectOne('http://localhost:8080/api/movements');
+
+    // Simulamos un error del servidor
+    request.flush(
+      { message: 'Error interno' },
+      { status: 500, statusText: 'Internal Server Error' },
+    );
+
+    expect(errorRecibido).toEqual(expect.any(HttpErrorResponse));
+    expect(service.movements()).toEqual([]);
+    expect(service.saldo()).toBe(0);
   });
-
-  const request = httpMock.expectOne(
-    'http://localhost:8080/api/movements'
-  );
-
-  // Simulamos un error del servidor
-  request.flush(
-    { message: 'Error interno' },
-    { status: 500, statusText: 'Internal Server Error' }
-  );
-
-  expect(errorRecibido).toEqual(jasmine.any(HttpErrorResponse));
-  expect(service.movements()).toEqual([]);
-  expect(service.saldo()).toBe(0);
-});
 
   it('debería actualizar un movimiento sin modificar los demás', () => {
     const movimientos: Movement[] = [
