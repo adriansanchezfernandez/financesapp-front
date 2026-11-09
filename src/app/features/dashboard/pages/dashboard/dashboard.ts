@@ -3,12 +3,13 @@ import { MovementsService } from '../../../movements/services/movements.service'
 import { MonthlySummary } from '../../models/monthly-summary.model';
 import { effect, ElementRef, viewChild } from '@angular/core';
 import { Chart, registerables } from 'chart.js';
+import { MaterialModule } from '../../../../shared/material/material-module';
 
 Chart.register(...registerables);
 
 @Component({
   selector: 'app-dashboard',
-  imports: [],
+  imports: [MaterialModule],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
 })
@@ -92,11 +93,15 @@ constructor() {
             label: 'Ingresos',
             data: summary.map(item => item.ingresos),
             backgroundColor: '#4caf50',
+            borderRadius: 8,
+            maxBarThickness: 35,
           },
           {
             label: 'Gastos',
             data: summary.map(item => item.gastos),
             backgroundColor: '#f44336',
+            borderRadius: 8,
+            maxBarThickness: 35
           },
         ],
       },

@@ -1,9 +1,11 @@
 <h2>Evolución de ingresos y gastos</h2>
 
 <mat-button-toggle-group
+class="period-toggle"
   [value]="selectedPeriod()"
   (change)="selectedPeriod.set($event.value)"
   aria-label="Periodo del gráfico"
+  [hideSingleSelectionIndicator]="true"
 >
   <mat-button-toggle [value]="6">6 meses</mat-button-toggle>
   <mat-button-toggle [value]="12">12 meses</mat-button-toggle>
@@ -11,5 +13,10 @@
 </mat-button-toggle-group>
 
 <div class="chart-container">
-  <canvas #monthlyChart></canvas>
+  <div
+    class="chart-content"
+    [style.width.px]="visibleMonthlySummary().length * 90"
+  >
+    <canvas #monthlyChart></canvas>
+  </div>
 </div>

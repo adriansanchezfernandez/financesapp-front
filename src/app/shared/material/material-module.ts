@@ -22,7 +22,7 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 
 // Botones e iconos
 import { MatButtonModule } from '@angular/material/button';
-import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatButtonToggle, MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatIconModule } from '@angular/material/icon';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatButtonToggleGroup } from '@angular/material/button-toggle';
@@ -74,6 +74,7 @@ const MATERIAL_MODULES = [
   MatIconModule,
   MatBadgeModule,
   MatButtonToggleGroup,
+  MatButtonToggle,
 
   // Navegación
   MatToolbarModule,
@@ -97,6 +98,7 @@ const MATERIAL_MODULES = [
 ];
 
 @NgModule({
+  imports: MATERIAL_MODULES,
   exports: MATERIAL_MODULES
 })
 export class MaterialModule {}
