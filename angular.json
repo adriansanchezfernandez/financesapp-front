@@ -7,10 +7,10 @@
   "newProjectRoot": "projects",
   "schematics": {
     "@schematics/angular:application": {
-      "testRunner": "karma"
+      "testRunner": "vitest"
     },
     "@schematics/angular:library": {
-      "testRunner": "karma"
+      "testRunner": "vitest"
     }
   },
   "projects": {
