@@ -3,7 +3,7 @@ import { HttpErrorResponse, provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 
 import { MovementsService } from './movements.service';
-import { CreateMovement, Movement } from '../pages/models/movement.model';
+import { CreateMovement, MOCK_MOVEMENTS, Movement } from '../pages/models/movement.model';
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 describe('MovementsService', () => {
   let service: MovementsService;
@@ -213,4 +213,25 @@ describe('MovementsService', () => {
     expect(service.totalGastos()).toBe(0);
     expect(service.saldo()).toBe(1500);
   });
+
+  it('should load mock movements when the backend is unavailable', () => {
+  // 1. Ejecutar el método que queremos probar
+  service.loadMovements();
+
+  // 2. Interceptar la petición HTTP
+  const req = httpMock.expectOne(
+    'http://localhost:8080/api/movements'
+  );
+
+  // 3. Simular un fallo de conexión
+  req.error(new ProgressEvent('error'), {
+    status: 0,
+    statusText: 'Unknown Error'
+  });
+
+  // 4. Comprobar los resultados
+  expect(service.movements()).toEqual(MOCK_MOVEMENTS);
+  expect(service.loading()).toBe(false);
+});
+
 });

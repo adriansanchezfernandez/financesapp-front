@@ -1,7 +1,7 @@
 import { computed, inject, Injectable, signal } from "@angular/core";
 import { CreateMovement, MOCK_MOVEMENTS, Movement } from "../pages/models/movement.model";
 import { HttpClient } from "@angular/common/http";
-import { finalize, Observable, tap } from "rxjs";
+import { catchError, finalize, Observable, of, tap, throwError } from "rxjs";
 
 @Injectable({
   providedIn: 'root',
@@ -31,8 +31,17 @@ readonly saldo = computed(() =>
 );
 
 loadMovements(): void {
-   this.loading.set(true);
+  this.loading.set(true);
+
   this.http.get<Movement[]>(this.apiUrl).pipe(
+    catchError(error => {
+      if (error.status === 0) {
+        console.warn('Backend no disponible. Cargando datos mock.');
+        return of(MOCK_MOVEMENTS);
+      }
+
+      return throwError(() => error);
+    }),
     finalize(() => this.loading.set(false))
   ).subscribe({
     next: (movements) => {
@@ -80,5 +89,7 @@ updateMovement(id: number, changes: CreateMovement): Observable<Movement> {
     })
   );
 }
+
+
 
 }
