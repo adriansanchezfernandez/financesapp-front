@@ -6,7 +6,13 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+
+"docker:up": "docker compose -f ../financesapp-back/compose.yaml up -d",
+"docker:stop": "docker compose -f ../financesapp-back/compose.yaml stop",
+"docker:start": "docker compose -f ../financesapp-back/compose.yaml start",
+"docker:down": "docker compose -f ../financesapp-back/compose.yaml down",
+"docker:logs": "docker compose -f ../financesapp-back/compose.yaml logs -f"
   },
   "private": true,
   "packageManager": "npm@11.19.1",

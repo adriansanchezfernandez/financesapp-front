@@ -2,6 +2,7 @@ import { computed, inject, Injectable, signal } from "@angular/core";
 import { CreateMovement, MOCK_MOVEMENTS, Movement } from "../pages/models/movement.model";
 import { HttpClient } from "@angular/common/http";
 import { catchError, finalize, Observable, of, tap, throwError } from "rxjs";
+import { environment } from "../../../../environments/environment";
 
 @Injectable({
   providedIn: 'root',
@@ -11,8 +12,7 @@ export class MovementsService {
   readonly loading = signal(false);
   private readonly _movements = signal<Movement[]>([]);
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = 'http://localhost:8080/api/movements';
-  readonly movements = this._movements.asReadonly();
+private readonly apiUrl = `${environment.apiUrl}/movements`;  readonly movements = this._movements.asReadonly();
 
   readonly totalIngresos = computed(() =>
   this._movements()
